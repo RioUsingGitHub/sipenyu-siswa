@@ -40,3 +40,62 @@ export interface User {
     updated_at: string;
     [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface User {
+    id: number
+    name: string
+    email: string
+    nisn?: string
+    class?: string
+    role: "student" | "admin"
+  }
+  
+  export interface AuthState {
+    user: User | null
+    token: string | null
+    isAuthenticated: boolean
+    isLoading: boolean
+    error: string | null
+  }
+  
+  export interface Attendance {
+    id: number
+    student_id: number
+    subject_id: number
+    class_id: number
+    teacher_id: number
+    meeting_number: number
+    status: "hadir" | "izin" | "alpa" | "sakit"
+    date: string
+    time_start: string
+    time_end: string
+  }
+  
+  export interface Subject {
+    id: number
+    name: string
+    teacher_name: string
+    day?: string
+    time_start?: string
+    time_end?: string
+  }
+  
+  export interface AttendanceDetail {
+    meeting_number: number
+    date: string
+    time_start: string
+    time_end: string
+    status: "hadir" | "izin" | "alpa" | "sakit"
+    status_text: string
+  }
+  
+  export interface QRCodeData {
+    token: string
+    subject_id: number
+    class_id: number
+    teacher_id: number
+    meeting_number: number
+    expires_at: string
+  }
+  
+  

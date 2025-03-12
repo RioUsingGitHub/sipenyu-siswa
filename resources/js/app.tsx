@@ -1,24 +1,40 @@
-import '../css/app.css';
-
+import React, { useState, useEffect } from 'react';
+import { AuthProvider, User } from './Contexts/AuthContext';
 import { createInertiaApp } from '@inertiajs/react';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { createRoot } from 'react-dom/client';
-import { initializeTheme } from './hooks/use-appearance';
+import { ThemeProvider } from './components/theme-provider';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+// Define proper types
+interface Auth {
+  user: User | null;
+}
 
-createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
-    setup({ el, App, props }) {
-        const root = createRoot(el);
+interface PageProps {
+  auth: Auth;
+  [key: string]: any;
+}
 
-        root.render(<App {...props} />);
-    },
-    progress: {
-        color: '#4B5563',
-    },
-});
+export default function App() {
+  const [appContent, setAppContent] = useState<React.ReactNode | null>(null);
 
-// This will set light / dark mode on load...
-initializeTheme();
+  useEffect(() => {
+    createInertiaApp({
+      resolve: (name) => {
+        const pages = import.meta.glob('./Pages/**/*.tsx', { eager: true });
+        return pages[`./Pages/${name}.tsx`];
+      },
+      setup({ el, App, props }) {
+        setAppContent(<App {...props} />);
+      },
+    });
+  }, []);
+
+  if (!appContent) {
+    return <div>Loading...</div>; // Bisa diganti dengan spinner atau splash screen
+  }
+
+  return (
+    <ThemeProvider defaultTheme="light" storageKey="sipenyu-theme">
+      <AuthProvider>{appContent}</AuthProvider>
+    </ThemeProvider>
+  );
+}
