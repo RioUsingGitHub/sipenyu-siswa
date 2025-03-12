@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\API\AttendanceController;
-use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ClassController;
 use App\Http\Controllers\API\QrCodeController;
 use App\Http\Controllers\API\ReportController;
@@ -17,14 +16,8 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Public routes
-Route::post('/login', [AuthController::class, 'login']);
-
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Auth
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
     
     // Student routes
     Route::get('/schedule/today', [ScheduleController::class, 'todaySchedule']);

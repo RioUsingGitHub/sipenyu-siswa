@@ -21,8 +21,8 @@ class AuthController extends Controller
 
         // First try to authenticate as a user (admin/teacher)
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-            $token = $user->createToken('auth-token')->plainTextToken;
+            $user = User::where('email', $request->email)->first();
+            $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'user' => [

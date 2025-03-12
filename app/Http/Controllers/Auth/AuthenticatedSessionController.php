@@ -27,14 +27,32 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
-    {
+    public function store(LoginRequest $request)
+{
+    // First try standard user authentication (Breeze default)
+    try {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('home', absolute: false));
+    } catch (\Exception $e) {
+        // If standard authentication fails, try student authentication
+        $student = \App\Models\Student::where('nisn', $request->input('email'))->first();
+
+        if ($student && Hash::check($request->input('password'), $student->password)) {
+            Auth::guard('student')->login($student);
+            $request->session()->regenerate();
+
+            // Store student role in session
+            session(['user_role' => 'student']);
+            
+            return redirect()->intended(route('home', absolute: false));
+        }
+        
+        // If both fail, throw the original exception
+        throw $e;
     }
+}
 
     /**
      * Destroy an authenticated session.
